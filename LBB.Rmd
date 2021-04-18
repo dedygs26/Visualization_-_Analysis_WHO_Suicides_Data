@@ -12,39 +12,49 @@ output:
     toc_depth: 2
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE,message=TRUE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE)
 ```
-# Pendahuluan
+
+```{css, echo=FALSE}
+p{
+  font-size: 110%;
+  }
+```
+
+
+# Introduction
 ##        {.tabset .tabset-fade .tabset-pills}
 
-### 1.1 Latar Belakang
-<p>  Berikut ini merupakan data dari daftar kasus bunuh diri dari berbagai negara dengan dari Tahun 1979-2016. Data yang digunakan diambil dari wesite Kaggle.com dan bisa di akses pada <b><a href="https://www.kaggle.com/szamil/who-suicide-statistics" target="_blank">link</a></b> tersebut </p>
+### 1.1 Brief
+<p>  The following is data from a list of suicides from various countries from 1979-2016. The data used is taken from the Kaggle.com website and can be accessed at  <b><a href="https://www.kaggle.com/szamil/who-suicide-statistics">this</a></b></p>
 
 ### 1.2 Data's Point of View
-
-Dengan data berikut saya akan menampilkan sebuah visualisasi dalam bentuk grafik/plot dengan hasil yaitu:
-Grafik 1 : Kumulatif jumlah kasus bunuh diri dari semua negara dari tahun 1980-2016
-Grafik 2 : Kumulatif jumlah kasus bunuh diri berdasarkan perbedaan gender dari tahun 1980 - 2016
-Grafik 3 : Kumulatif jumlah kasus bunuh diri berdasarkan perbedaan gender untuk setiap kategori umur dari tahun 1980 - 2016
-Grafik 4 : top 10 Kasus Bunuh Diri Terbesar berdasrakan jenis kelamin  wanita
-Grafik 5 : top 10 Kasus Bunuh Diri Terbesar berdasrakan jenis kelamin pria
-
+<p>
+With the following data I will present a visualization in the form of a graph / plot with the results, namely:
+Graph 1: Cumulative number of suicides from all countries from 1980-2016
+Graph 2: Cumulative number of suicides based on gender differences from 1980 - 2016
+Graph 3: Cumulative number of suicides based on gender differences for each age category from 1980 - 2016
+Graph 4: Top 10 Biggest Suicide Cases based on female gender
+Graph 5: Top 10 Biggest Suicide Cases based on male gender
+</p>
 # Set Up
 ##        {.tabset .tabset-fade .tabset-pills}
-### load library
+### Load Library
 ```{r, message=FALSE,fig.dim=c(10,10)}
 library(tidyverse)
 library(ggplot2) # plot
 options(scipen = 9999)
+options(dplyr.summarise.inform = FALSE)
+options(dplyr.selecting.inform = FALSE)
 ```
 
-### import data
+### Import Data
 ```{r}
 suicide <- read.csv("data_input/who_suicide_statistics.csv")
 glimpse(suicide)
 ```
-<p> Terdapat beberapa kolom yang tipe datanya tidak sesuai dengan seharunya seperti sex, country, age. </p> 
+<p> There are several columns whose data types do not match what they should be, such as sex, country, age </p> 
 
 ### Data Inspection
 
@@ -59,8 +69,9 @@ df <- suicide %>%
 ```{r}
 colSums(is.na(suicide))
 ```
-
-Terdapat 2256 data kosong dan kita akan mengisinya dengan angka 0
+<p>
+There are 2256 blank data and we will fill it with number 0
+</p>
 
 
 ```{r}
@@ -69,13 +80,15 @@ df1 <- df %>%
   mutate(suicides_no =ifelse(is.na(suicides_no), yes = 0, no = suicides_no))
 ```
 
-Pengecheckan missing value kembali setelah diimput 0
+
+<p> Check the missing value again after importing 0 </p>
 
 ```{r}
 colSums(is.na(df1))
 ```
-
-Dan untuk mempermudah saya mengubah nama kolom suicides_no menjadi suicides
+<p>
+And to make things easier I changed the column name suicides_no to suicide
+</p>
 
 ```{r}
 df2 <- df1 %>% rename(.data = .,suicides=suicides_no)
@@ -84,20 +97,22 @@ str(df2)
 ```
 
 # Data Explanation 
-Now i`ll show details from each columns to gain insights from each columns
+<p>Now i`ll show details from each columns to gain insights from each columns</p>
 
 ```{r}
 summary(df2)
 ```
-Here are insight we can get after we summarize the data:
-1. the first case in 1979
-2. mean of sucides at 183.4
-3. Max suicides at 22338
+<p>
+Here are the insights we can get after we summarize the data:
+1. First case in 1979
+2. the rate of suicide was 183.4
+3. The highest number of suicides was 22338
+</p>
 
-# Visualisasi
+# Visualization
 
 
-<p> Kasus bunuh diri berdasrkan tahun </p>
+<p> Suicide cases based on years </p>
 
 ```{r}
 df2 %>% 
@@ -105,7 +120,7 @@ df2 %>%
   summarise(kasus = sum(suicides)) %>% 
   ggplot(aes(x=year,y=kasus,col="red"))+
   geom_line(size=1.5)+
-  labs(title = "Year-Based Suicides",
+  labs(title = "Graph Year-Based Suicide",
         subtitle = "from 1979 until 2016",
        y = "Cumulative Death",
        x = "Year")+
@@ -115,8 +130,8 @@ df2 %>%
 
 
 
-<p> kasus bunuh diri berdasarkan umur </p>
-```{r,warning=TRUE}
+<p> Age-based suicides </p>
+```{r,warning=FALSE}
 df2 %>% 
   group_by(sex,year) %>% 
   summarise(kasus = sum(suicides)) %>% 
@@ -131,7 +146,7 @@ df2 %>%
 ```
 
 
-<p> Kasus Bunuh diri berdasarkan Jenis kelamin dan umur  </p>
+<p> Suicide cases based on gender and age  </p>
 ```{r}
 df2 %>% 
   group_by(age,sex) %>% 
@@ -145,7 +160,7 @@ df2 %>%
        y = "Cumulative Suicides")
 ```
 
-<p> Kasus bunuh diri berdasarkan Kategori Umur </p>
+<p> Suicide cases by Age Category </p>
 ```{r}
 df2 %>% 
   group_by(age,year) %>% 
@@ -153,15 +168,15 @@ df2 %>%
   ungroup() %>%
   ggplot(aes(x=year,y=kasus))+
   geom_line(aes(col=age),size=1.5)+
-   labs(title = "Plot age-based suicides",
+   labs(title = "Graph age-based suicides",
        subtitle = "from 1979 until 2016",
        x = "Year",
        y = "Suicides")
 ```
 
-10 besar negara dengan total kasus bunuh diri 
+<p>Top 10 countries with total suicides </p>
 
-```{r}
+```{r, message=FALSE}
 df2 %>% 
   group_by(country) %>% 
   summarise(total = sum(suicides)) %>% 
@@ -175,9 +190,9 @@ df2 %>%
   theme(legend.position = "none")
 ```
 
-10 Besar negara dengan total kasus bunuh diri berdasarkan jenis kelamin perempuan
+<p> Top 10 countries with total cases of suicide by female sex </p>
 
-```{r}
+```{r,message=FALSE}
 df2 %>%
   filter(sex %in% "female") %>% 
   group_by(country) %>% 
@@ -193,9 +208,9 @@ df2 %>%
 ```
 
 
-10 Besar negara dengan total kasus bunuh diri berdasrakan jenis kelamin wanita
+<p> Top 10 countries with total cases of suicide by male gender </p>
 
-```{r}
+```{r, message=FALSE}
 df2 %>%
   filter(sex %in% "male") %>% 
   group_by(country) %>% 
@@ -212,6 +227,18 @@ df2 %>%
 
 
 # Summary
-Dari data yang sudah diolah dan divisualisasikan, dapat disumpulkan bahwa :
-1. grafik pertama menunjukan terjadinya peningkatan kasus bunuh diri mulai dari tahun 1979
+</p>
+From the data that has been processed and visualized, it can be concluded that:
 
+1.The first graph shows an increase in suicides from 1979 to 2016. And in the years between 1983-1984 there was a decrease in suicide cases, and these suicides increased again in 1984
+
+2. The second graph shows that suicides are mostly committed by males than females. female suicides tend to be stable
+
+3. The third graph, based on the graph, it can be concluded that, the highest number of perpetrators of suicide cases are men aged 34-54 years and 55-74 years, while for women also of the same age
+
+4. Most suicides occurred in Russia, USA, JAPAN, France and Ukraine
+
+5. Most cases of female suicide occurred in Japan, Russia, USA, France and Korea
+
+5. Most cases of male suicide occur in Russia, USA, JAPAN, UKRAINE and France
+</p>
