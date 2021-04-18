@@ -1,0 +1,55 @@
+---
+title: "Suicidal Data Analysis with Visualization"
+author: "Dedy Gusnadi Sianipar"
+date: "3/30/2021"
+output:
+  rmdformats::downcute:
+    self_contained: yes
+    thumbnails: no
+    lightbox: yes
+    gallery: yes
+    highlight: kate
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Pendahuluan
+##        {.tabset .tabset-fade .tabset-pills}
+
+### 1.1 Latar Belakang
+  Berikut ini merupakan data dari daftar kasus bunuh diri dari berbagai negara dengan waktu terntentu
+
+### 1.2 Data's Point of View
+
+
+# Load Library Package
+```{r}
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+```
+
+
+
+
+```{r}
+suicide <- read.csv("data_input/who_suicide_statistics.csv")
+glimpse(suicide)
+```
+
+```{r}
+df <- suicide %>%
+  mutate_if(is.character,as.factor) 
+df1 <- df %>% mutate(suicides_no =ifelse(is.na(suicides_no), yes = 0, no = suicides_no))
+df2<- df1 %>% mutate(population =ifelse(is.na(population), yes = mean(df1 %>% selmean(population)), no = population))
+str(df2)
+```
+
+```{r}
+summary(df2)
+```
+suicide per million
+
+
