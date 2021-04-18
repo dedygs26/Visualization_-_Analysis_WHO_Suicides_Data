@@ -29,6 +29,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
+options(scipen = 9999)
 ```
 
 
@@ -42,14 +43,71 @@ glimpse(suicide)
 ```{r}
 df <- suicide %>%
   mutate_if(is.character,as.factor) 
-df1 <- df %>% mutate(suicides_no =ifelse(is.na(suicides_no), yes = 0, no = suicides_no))
-df2<- df1 %>% mutate(population =ifelse(is.na(population), yes = mean(df1 %>% selmean(population)), no = population))
-str(df2)
+df1 <- df %>% 
+  select(-population) %>% 
+  mutate(suicides_no =ifelse(is.na(suicides_no), yes = 0, no = suicides_no))
+df2 <- df1 %>% rename(.data = .,suicides=suicides_no)
+str(df1)
 ```
+EDA
+```{r}
+unique(df2$country)
+sum(df2$suicides)
+```
+suicide per year
 
 ```{r}
-summary(df2)
-```
-suicide per million
+df2 %>% 
+  group_by(year) %>%
+  summarise(kasus = sum(suicides)) %>% 
+  ggplot(aes(x=year,y=kasus,col="red"))+
+  geom_line()
 
+```
+
+
+
+suicides per Year across genders
+```{r,warning=TRUE}
+df2 %>% 
+  group_by(sex,year) %>% 
+  summarise(kasus = sum(suicides)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x=year,y=kasus,col=sex))+
+  geom_line(size=1.5)
+```
+total suicides by year acrros age groups
+```{r}
+df2 %>% 
+  group_by(age,sex) %>% 
+  summarise(kasus = sum(suicides)) %>% 
+  ungroup() %>%
+  ggplot(aes(x=sex,y=kasus))+
+  geom_col(aes(fill=age),position = "dodge")
+```
+```{r}
+df2 %>% 
+  group_by(age,year) %>% 
+  summarise(kasus = sum(suicides)) %>% 
+  ungroup() %>%
+  ggplot(aes(x=year,y=kasus))+
+  geom_line(aes(col=age),size=1.5)
+```
+top 10 county total suicides
+```{r}
+df2 %>% 
+  group_by(country) %>% 
+  summarise(total = sum(suicides)) %>% 
+  top_n(10) %>% 
+  ggplot(aes(x=total,y=reorder(country,total)))+
+  geom_col(fill="firebrick")
+```
+```{r}
+df2 %>% 
+  group_by(country,year) %>% 
+  summarise(total = sum(suicides)) %>% 
+  top_n(10) %>% 
+  ggplot(aes(x=year,y=total),col=country)+
+  geom_line()
+```
 
