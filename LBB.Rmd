@@ -19,42 +19,85 @@ knitr::opts_chunk$set(echo = TRUE)
 ##        {.tabset .tabset-fade .tabset-pills}
 
 ### 1.1 Latar Belakang
-  Berikut ini merupakan data dari daftar kasus bunuh diri dari berbagai negara dengan waktu terntentu
+<p>  Berikut ini merupakan data dari daftar kasus bunuh diri dari berbagai negara dengan dari Tahun 1979-2016. Data yang digunakan diambil dari wesite Kaggle.com dan bisa di akses pada <b><a href="https://www.kaggle.com/szamil/who-suicide-statistics" target="_blank">link</a></b> tersebut </p>
 
 ### 1.2 Data's Point of View
 
+Dengan data berikut saya akan menampilkan sebuah visualisasi dalam bentuk grafik/plot dengan hasil yaitu:
+Grafik 1 : Kumulatif jumlah kasus bunuh diri dari semua negara dari tahun 1980-2016
+Grafik 2 : Kumulatif jumlah kasus bunuh diri berdasarkan perbedaan gender dari tahun 1980 - 2016
+Grafik 3 : Kumulatif jumlah kasus bunuh diri berdasarkan perbedaan gender untuk setiap kategori umur dari tahun 1980 - 2016
+Grafik 4 : top 10 Kasus Bunuh Diri Terbesar berdasrakan jenis kelamin  wanita
+Grafik 5 : top 10 Kasus Bunuh Diri Terbesar berdasrakan jenis kelamin pria
 
-# Load Library Package
+# Set Up
+##        {.tabset .tabset-fade .tabset-pills}
+### load library
 ```{r, message=FALSE,fig.dim=c(10,10)}
 library(tidyverse)
-library(lubridate)
-library(ggplot2)
+library(ggplot2) # plot
 options(scipen = 9999)
 ```
 
-
-
-
+### import data
 ```{r}
 suicide <- read.csv("data_input/who_suicide_statistics.csv")
 glimpse(suicide)
 ```
+<p> Terdapat beberapa kolom yang tipe datanya tidak sesuai dengan seharunya seperti sex, country, age. </p> 
 
+### Data Inspection
+
+
+1. Change Data Type
 ```{r}
 df <- suicide %>%
-  mutate_if(is.character,as.factor) 
+  mutate_if(is.character,as.factor)
+```
+
+2. Check missing value
+```{r}
+colSums(is.na(suicide))
+```
+
+Terdapat 2256 data kosong dan kita akan mengisinya dengan angka 0
+
+
+```{r}
 df1 <- df %>% 
   select(-population) %>% 
   mutate(suicides_no =ifelse(is.na(suicides_no), yes = 0, no = suicides_no))
-df2 <- df1 %>% rename(.data = .,suicides=suicides_no)
-str(df1)
 ```
-EDA
+
+Pengecheckan missing value kembali setelah diimput 0
+
 ```{r}
-unique(df2$country)
-sum(df2$suicides)
+colSums(is.na(df1))
 ```
-suicide per year
+
+Dan untuk mempermudah saya mengubah nama kolom suicides_no menjadi suicides
+
+```{r}
+df2 <- df1 %>% rename(.data = .,suicides=suicides_no)
+str(df2)
+
+```
+
+# Data Explanation 
+Now i`ll show details from each columns to gain insights from each columns
+
+```{r}
+summary(df2)
+```
+Here are insight we can get after we summarize the data:
+1. the first case in 1979
+2. mean of sucides at 183.4
+3. Max suicides at 22338
+
+# Visualisasi
+
+
+<p> Kasus bunuh diri berdasrkan tahun </p>
 
 ```{r}
 df2 %>% 
@@ -63,7 +106,7 @@ df2 %>%
   ggplot(aes(x=year,y=kasus,col="red"))+
   geom_line(size=1.5)+
   labs(title = "Year-Based Suicides",
-       subtitle = "from 1985 until 2016",
+        subtitle = "from 1979 until 2016",
        y = "Cumulative Death",
        x = "Year")+
   theme(legend.position = "none")
@@ -72,7 +115,7 @@ df2 %>%
 
 
 
-suicides per Year across genders
+<p> kasus bunuh diri berdasarkan umur </p>
 ```{r,warning=TRUE}
 df2 %>% 
   group_by(sex,year) %>% 
@@ -81,12 +124,14 @@ df2 %>%
   ggplot(aes(x=year,y=kasus,col=sex))+
   geom_line(size=1.5)+
   labs(title = "Graph Sex-Based Suicide",
-       subtitle = "from 1985 until 2016",
+        subtitle = "from 1979 until 2016",
        y = "Cumulative Death",
        x = "year")+
   theme(legend.position = "none")
 ```
-total suicides by year acrros age groups
+
+
+<p> Kasus Bunuh diri berdasarkan Jenis kelamin dan umur  </p>
 ```{r}
 df2 %>% 
   group_by(age,sex) %>% 
@@ -95,10 +140,12 @@ df2 %>%
   ggplot(aes(x=sex,y=kasus))+
   geom_col(aes(fill=age),position = "dodge")+
   labs(title = "Graph Sex & Age-Based Suicides",
-       subtitle = "from 1985 until 2016",
+        subtitle = "from 1979 until 2016",
        x = "sex",
        y = "Cumulative Suicides")
 ```
+
+<p> Kasus bunuh diri berdasarkan Kategori Umur </p>
 ```{r}
 df2 %>% 
   group_by(age,year) %>% 
@@ -107,11 +154,13 @@ df2 %>%
   ggplot(aes(x=year,y=kasus))+
   geom_line(aes(col=age),size=1.5)+
    labs(title = "Plot age-based suicides",
-       subtitle = "from 1985 until 2016",
+       subtitle = "from 1979 until 2016",
        x = "Year",
        y = "Suicides")
 ```
-top 10 county total suicides
+
+10 besar negara dengan total kasus bunuh diri 
+
 ```{r}
 df2 %>% 
   group_by(country) %>% 
@@ -120,11 +169,14 @@ df2 %>%
   ggplot(aes(x=total,y=reorder(country,total)))+
   geom_col(fill="firebrick")+
    labs(title = "Top 10 Country Suicides",
-       subtitle = "from 1985 until 2016",
+        subtitle = "from 1979 until 2016",
        x = "Cumulative Death",
        y = "Country")+
   theme(legend.position = "none")
 ```
+
+10 Besar negara dengan total kasus bunuh diri berdasarkan jenis kelamin perempuan
+
 ```{r}
 df2 %>%
   filter(sex %in% "female") %>% 
@@ -134,11 +186,15 @@ df2 %>%
   ggplot(aes(x=total, y=reorder(country,total), fill="firebrick"))+
   geom_col()+
   labs(title = "Top 10 Country Woman Suicides",
-       subtitle = "from 1985 until 2016",
+       subtitle = "from 1979 until 2016",
        x = "Cumulative Death",
        y = "Country")+
   theme(legend.position = "none")
 ```
+
+
+10 Besar negara dengan total kasus bunuh diri berdasrakan jenis kelamin wanita
+
 ```{r}
 df2 %>%
   filter(sex %in% "male") %>% 
@@ -148,9 +204,14 @@ df2 %>%
   ggplot(aes(x=total, y=reorder(country,total), fill="firebrick"))+
   geom_col()+
   labs(title = "Top 10 Country Male Suicides",
-       subtitle = "from 1985 until 2016",
+       subtitle = "from 1979 until 2016",
        x = "Cumulative Death",
        y = "Country")+
   theme(legend.position = "none")
 ```
+
+
+# Summary
+Dari data yang sudah diolah dan divisualisasikan, dapat disumpulkan bahwa :
+1. grafik pertama menunjukan terjadinya peningkatan kasus bunuh diri mulai dari tahun 1979
 
