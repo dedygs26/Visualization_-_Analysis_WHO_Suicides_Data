@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 # Load Library Package
-```{r}
+```{r, message=FALSE,fig.dim=c(10,10)}
 library(tidyverse)
 library(lubridate)
 library(ggplot2)
@@ -61,7 +61,12 @@ df2 %>%
   group_by(year) %>%
   summarise(kasus = sum(suicides)) %>% 
   ggplot(aes(x=year,y=kasus,col="red"))+
-  geom_line()
+  geom_line(size=1.5)+
+  labs(title = "Year-Based Suicides",
+       subtitle = "from 1985 until 2016",
+       y = "Cumulative Death",
+       x = "Year")+
+  theme(legend.position = "none")
 
 ```
 
@@ -74,7 +79,12 @@ df2 %>%
   summarise(kasus = sum(suicides)) %>% 
   ungroup() %>% 
   ggplot(aes(x=year,y=kasus,col=sex))+
-  geom_line(size=1.5)
+  geom_line(size=1.5)+
+  labs(title = "Graph Sex-Based Suicide",
+       subtitle = "from 1985 until 2016",
+       y = "Cumulative Death",
+       x = "year")+
+  theme(legend.position = "none")
 ```
 total suicides by year acrros age groups
 ```{r}
@@ -83,7 +93,11 @@ df2 %>%
   summarise(kasus = sum(suicides)) %>% 
   ungroup() %>%
   ggplot(aes(x=sex,y=kasus))+
-  geom_col(aes(fill=age),position = "dodge")
+  geom_col(aes(fill=age),position = "dodge")+
+  labs(title = "Graph Sex & Age-Based Suicides",
+       subtitle = "from 1985 until 2016",
+       x = "sex",
+       y = "Cumulative Suicides")
 ```
 ```{r}
 df2 %>% 
@@ -91,7 +105,11 @@ df2 %>%
   summarise(kasus = sum(suicides)) %>% 
   ungroup() %>%
   ggplot(aes(x=year,y=kasus))+
-  geom_line(aes(col=age),size=1.5)
+  geom_line(aes(col=age),size=1.5)+
+   labs(title = "Plot age-based suicides",
+       subtitle = "from 1985 until 2016",
+       x = "Year",
+       y = "Suicides")
 ```
 top 10 county total suicides
 ```{r}
@@ -100,14 +118,39 @@ df2 %>%
   summarise(total = sum(suicides)) %>% 
   top_n(10) %>% 
   ggplot(aes(x=total,y=reorder(country,total)))+
-  geom_col(fill="firebrick")
+  geom_col(fill="firebrick")+
+   labs(title = "Top 10 Country Suicides",
+       subtitle = "from 1985 until 2016",
+       x = "Cumulative Death",
+       y = "Country")+
+  theme(legend.position = "none")
 ```
 ```{r}
-df2 %>% 
-  group_by(country,year) %>% 
+df2 %>%
+  filter(sex %in% "female") %>% 
+  group_by(country) %>% 
   summarise(total = sum(suicides)) %>% 
   top_n(10) %>% 
-  ggplot(aes(x=year,y=total),col=country)+
-  geom_line()
+  ggplot(aes(x=total, y=reorder(country,total), fill="firebrick"))+
+  geom_col()+
+  labs(title = "Top 10 Country Woman Suicides",
+       subtitle = "from 1985 until 2016",
+       x = "Cumulative Death",
+       y = "Country")+
+  theme(legend.position = "none")
+```
+```{r}
+df2 %>%
+  filter(sex %in% "male") %>% 
+  group_by(country) %>% 
+  summarise(total = sum(suicides)) %>% 
+  top_n(10) %>% 
+  ggplot(aes(x=total, y=reorder(country,total), fill="firebrick"))+
+  geom_col()+
+  labs(title = "Top 10 Country Male Suicides",
+       subtitle = "from 1985 until 2016",
+       x = "Cumulative Death",
+       y = "Country")+
+  theme(legend.position = "none")
 ```
 
