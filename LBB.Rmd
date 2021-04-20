@@ -32,11 +32,21 @@ p{
 ### 1.2 Data's Point of View
 <p>
 With the following data I will present a visualization in the form of a graph / plot with the results, namely:
-Graph 1: Cumulative number of suicides from all countries from 1980-2016
-Graph 2: Cumulative number of suicides based on gender differences from 1980 - 2016
-Graph 3: Cumulative number of suicides based on gender differences for each age category from 1980 - 2016
-Graph 4: Top 10 Biggest Suicide Cases based on female gender
-Graph 5: Top 10 Biggest Suicide Cases based on male gender
+
+<a href="#suicide-cases-based-on-years">Graph 1: Cumulative number of suicides from all countries from 1979-2016</a>
+
+<a href="#sex-based-suicides">Graph 2: Cumulative number of suicides based on gender differences from 1979-2016</a>
+
+<a href="#suicide-cases-based-on-gender-and-age">Graph 3: Cumulative number of suicides based on gender differences for each age category from 1979 - 2016</a>
+
+<a href="#suicide-cases-by-age-category">Graph 4: Cumulative number of suicides based on age Category  from 1979 - 2016</a>
+
+<a href="#top-10-countries-with-total-suicides">Graph 5: Top 10 countries with the most suicides</a>
+
+<a href="#top-10-countries-with-total-cases-of-suicide-by-female-gender">Graph 6: Top 10 Countries of Suicide based on female gender</a>
+
+<a href="#top-10-countries-with-total-cases-of-suicide-by-male-gender">Graph 7: Top 10 Countries of Suicide based on male gender</a>
+
 </p>
 # Set Up
 ##        {.tabset .tabset-fade .tabset-pills}
@@ -112,7 +122,7 @@ Here are the insights we can get after we summarize the data:
 # Visualization
 
 
-<p> Suicide cases based on years </p>
+## Suicide cases based on years
 
 ```{r}
 df2 %>% 
@@ -130,7 +140,7 @@ df2 %>%
 
 
 
-<p> Age-based suicides </p>
+## Sex-based suicides
 ```{r,warning=FALSE}
 df2 %>% 
   group_by(sex,year) %>% 
@@ -146,21 +156,21 @@ df2 %>%
 ```
 
 
-<p> Suicide cases based on gender and age  </p>
+## Suicide cases based on gender and age
 ```{r}
 df2 %>% 
   group_by(age,sex) %>% 
   summarise(kasus = sum(suicides)) %>% 
   ungroup() %>%
-  ggplot(aes(x=sex,y=kasus))+
-  geom_col(aes(fill=age),position = "dodge")+
+  ggplot(aes(x=kasus,y=age))+
+  geom_col(aes(fill=sex),position = "dodge")+
   labs(title = "Graph Sex & Age-Based Suicides",
         subtitle = "from 1979 until 2016",
        x = "sex",
        y = "Cumulative Suicides")
 ```
 
-<p> Suicide cases by Age Category </p>
+## Suicide cases by Age Category
 ```{r}
 df2 %>% 
   group_by(age,year) %>% 
@@ -174,7 +184,7 @@ df2 %>%
        y = "Suicides")
 ```
 
-<p>Top 10 countries with total suicides </p>
+## Top 10 countries with total suicides
 
 ```{r, message=FALSE}
 df2 %>% 
@@ -190,7 +200,7 @@ df2 %>%
   theme(legend.position = "none")
 ```
 
-<p> Top 10 countries with total cases of suicide by female sex </p>
+## Top 10 countries with total cases of suicide by female gender
 
 ```{r,message=FALSE}
 df2 %>%
@@ -208,7 +218,7 @@ df2 %>%
 ```
 
 
-<p> Top 10 countries with total cases of suicide by male gender </p>
+## Top 10 countries with total cases of suicide by male gender
 
 ```{r, message=FALSE}
 df2 %>%
@@ -232,13 +242,13 @@ From the data that has been processed and visualized, it can be concluded that:
 
 1.The first graph shows an increase in suicides from 1979 to 2016. And in the years between 1983-1984 there was a decrease in suicide cases, and these suicides increased again in 1984
 
-2. The second graph shows that suicides are mostly committed by males than females. female suicides tend to be stable
+2.The second graph shows that suicides are mostly committed by males than females. female suicides tend to be stable
 
-3. The third graph, based on the graph, it can be concluded that, the highest number of perpetrators of suicide cases are men aged 34-54 years and 55-74 years, while for women also of the same age
+3.The third graph, based on the graph, it can be concluded that, the highest number of perpetrators of suicide cases are men aged 34-54 years and 55-74 years, while for women also of the same age, so in the same time we it can explain the graph 4.
 
-4. Most suicides occurred in Russia, USA, JAPAN, France and Ukraine
+4.Most suicides occurred in Russia, USA, JAPAN, France and Ukraine
 
-5. Most cases of female suicide occurred in Japan, Russia, USA, France and Korea
+5.Most cases of female suicide occurred in Japan, Russia, USA, France and Korea
 
-5. Most cases of male suicide occur in Russia, USA, JAPAN, UKRAINE and France
+6.Most cases of male suicide occur in Russia, USA, JAPAN, UKRAINE and France
 </p>
